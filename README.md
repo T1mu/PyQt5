@@ -146,7 +146,7 @@ exec_()方法有一个下划线。因为exec是Python保留关键字。因此，
         def __init__(self):
             super().__init__()
             ...
-在面向对象编程中有三个重要的东西，分别是类，数据和方法。这里我们创建了一个新类叫做Example。Example类继承自QWidget类。这意味着我们调用了两个构造方法：第一个是Example类的构造方法，第二个是被继承类的构造方法。super()方法返回了Example类的父类对象，并且我们调用了父类的构造方法。__init__()方法是Python语言中的构造方法。
+在面向对象编程中有三个重要的东西，分别是**类，数据和方法**。这里我们创建了一个新类叫做Example。Example类继承自QWidget类。这意味着我们调用了两个构造方法：第一个是Example类的构造方法，第二个是被继承类的构造方法。super()方法返回了Example类的父类对象，并且我们调用了父类的构造方法。__init__()方法是Python语言中的构造方法。
     self.initUI()
 GUI的创建授予initUI()方法完成。
     self.setGeometry(300, 300, 300, 220)
@@ -160,11 +160,12 @@ GUI的创建授予initUI()方法完成。
         sys.exit(app.exec_()) 
 应用和example对象被创建。主循环被启动。
 
-IconFigure: Icon
+
+## IconFigure: Icon
 
 显示一个提示文本
 我们可以给我们的任何widget组件提供气泡帮助提示框。
-
+**003.py**
     #!/usr/bin/python3
     # -*- coding: utf-8 -*-
     
@@ -186,19 +187,13 @@ IconFigure: Icon
     
     
     class Example(QWidget):
-        
         def __init__(self):
             super().__init__()
-            
             self.initUI()
             
-            
         def initUI(self):
-            
             QToolTip.setFont(QFont('SansSerif', 10))
-            
             self.setToolTip('This is a <b>QWidget</b> widget')
-            
             btn = QPushButton('Button', self)
             btn.setToolTip('This is a <b>QPushButton</b> widget')
             btn.resize(btn.sizeHint())
@@ -223,116 +218,59 @@ IconFigure: Icon
     btn = QPushButton('Button', self)
     btn.setToolTip('This is a <b>QPushButton</b> widget')
 我们创建了一个按钮组件并且为它设置一个提示框。
-
-1
-2
-btn.resize(btn.sizeHint())
-btn.move(50, 50)   
- 
-
+    btn.resize(btn.sizeHint())
+    btn.move(50, 50)   
 这里改变了按钮的大小，并移动了在窗口上的位置。setHint()方法给了按钮一个推荐的大小。
-
-TooltipsFigure: Tooltips
-
+    TooltipsFigure: Tooltips
 关闭窗口
 明显的关闭窗口的方法是点击标题栏的X标记。在下面的例子中，我们将展示怎么通过程序来关闭我们的窗口。我们将简单的触及信号和槽机制。
-
-1
-QPushButton(string text, QWidget parent = None)
- 
-
+    QPushButton(string text, QWidget parent = None)
 text参数是将显示在按钮中的内容。parent参数是一个用来放置我们按钮的组件。在我们的例子中将会是QWidget组件。一个应用的组件是分层结构的。在这个分层内，大多数组件都有父类。没有父类的组件是顶级窗口。
 
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-44
-45
-#!/usr/bin/python3
-# -*- coding: utf-8 -*-
- 
-"""
-ZetCode PyQt5 tutorial
- 
-This program creates a quit
-button. When we press the button,
-the application terminates.
- 
-author: Jan Bodnar
-website: zetcode.com
-last edited: January 2015
-"""
- 
-import sys
-from PyQt5.QtWidgets import QWidget, QPushButton, QApplication
-from PyQt5.QtCore import QCoreApplication
- 
- 
-class Example(QWidget):
+    #!/usr/bin/python3
+    # -*- coding: utf-8 -*-
+    
+    """
+    ZetCode PyQt5 tutorial
+    
+    This program creates a quit
+    button. When we press the button,
+    the application terminates.
+    
+    author: Jan Bodnar
+    website: zetcode.com
+    last edited: January 2015
+    """
+    
+    import sys
+    from PyQt5.QtWidgets import QWidget, QPushButton, QApplication
+    from PyQt5.QtCore import QCoreApplication
+    
+    
+    class Example(QWidget):
+        
+        def __init__(self):
+            super().__init__()
+            
+            self.initUI()
+            
+            
+        def initUI(self):              
+            
+            qbtn = QPushButton('Quit', self)
+            qbtn.clicked.connect(QCoreApplication.instance().quit)
+            qbtn.resize(qbtn.sizeHint())
+            qbtn.move(50, 50)      
+            
+            self.setGeometry(300, 300, 250, 150)
+            self.setWindowTitle('Quit button')   
+            self.show()
      
-    def __init__(self):
-        super().__init__()
-         
-        self.initUI()
-         
-         
-    def initUI(self):              
-         
-        qbtn = QPushButton('Quit', self)
-        qbtn.clicked.connect(QCoreApplication.instance().quit)
-        qbtn.resize(qbtn.sizeHint())
-        qbtn.move(50, 50)      
-         
-        self.setGeometry(300, 300, 250, 150)
-        self.setWindowTitle('Quit button')   
-        self.show()
-         
-         
-if __name__ == '__main__':
-     
-    app = QApplication(sys.argv)
-    ex = Example()
-    sys.exit(app.exec_())
+    if __name__ == '__main__':
+        
+        app = QApplication(sys.argv)
+        ex = Example()
+        sys.exit(app.exec_())
  
 
 在这个例子中，我们创建一个退出按钮，一旦按下按钮，应用将会结束。

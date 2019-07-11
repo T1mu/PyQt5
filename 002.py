@@ -23,7 +23,7 @@ class Example(QWidget):
 
     def initUI(self):
 
-        self.setGeometry(300, 300, 300, 220)
+        self.setGeometry(300, 300, 700, 220)
         self.setWindowTitle('Icon')
         self.setWindowIcon(QIcon('./icon/2.png'))
         self.show()
