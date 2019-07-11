@@ -9,7 +9,8 @@ website: zetcode.com
 last edited: January 2015
 """
 
-import sys,os
+import sys
+import os
 from PyQt5.QtWidgets import QApplication, QWidget
 from PyQt5.QtGui import QIcon
 
@@ -25,10 +26,7 @@ class Example(QWidget):
 
         self.setGeometry(300, 300, 300, 220)
         self.setWindowTitle('Icon')
-        cwd = os.getcwd()
-        print(cwd)
         self.setWindowIcon(QIcon('./icon/2.png'))
-
         self.show()
 
 
