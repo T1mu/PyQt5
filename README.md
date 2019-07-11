@@ -211,21 +211,35 @@ GUI的创建授予initUI()方法完成。
         sys.exit(app.exec_())
 
 在这个例子中，我们为两个PyQt5组件显示了提示框。
+
     QToolTip.setFont(QFont('SansSerif', 10))
+
 这个静态方法设置了用于提示框的字体。我们使用10px大小的SansSerif字体。
+
     self.setToolTip('This is a <b>QWidget</b> widget') 
+
 为了创建提示框，我们调用了setTooltip()方法。我们可以在提示框中使用富文本格式。
+
     btn = QPushButton('Button', self)
     btn.setToolTip('This is a <b>QPushButton</b> widget')
+
 我们创建了一个按钮组件并且为它设置一个提示框。
+
     btn.resize(btn.sizeHint())
-    btn.move(50, 50)   
+    btn.move(50, 50)
+
 这里改变了按钮的大小，并移动了在窗口上的位置。setHint()方法给了按钮一个推荐的大小。
+
     TooltipsFigure: Tooltips
+
 关闭窗口
 明显的关闭窗口的方法是点击标题栏的X标记。在下面的例子中，我们将展示怎么通过程序来关闭我们的窗口。我们将简单的触及信号和槽机制。
+
     QPushButton(string text, QWidget parent = None)
+
 text参数是将显示在按钮中的内容。parent参数是一个用来放置我们按钮的组件。在我们的例子中将会是QWidget组件。一个应用的组件是分层结构的。在这个分层内，大多数组件都有父类。没有父类的组件是顶级窗口。
+
+## 004.py
 
     #!/usr/bin/python3
     # -*- coding: utf-8 -*-
@@ -275,83 +289,23 @@ text参数是将显示在按钮中的内容。parent参数是一个用来放置�
 
 在这个例子中，我们创建一个退出按钮，一旦按下按钮，应用将会结束。
 
-1
-from PyQt5.QtCore import QCoreApplication
- 
+    from PyQt5.QtCore import QCoreApplication
 
 我们需要一个来自QtCore的对象模块。
 
-1
-qbtn = QPushButton('Quit', self)
- 
+    qbtn = QPushButton('Quit', self)
 
 我们创建了一个按钮。按钮是一个QPushButton类的实例。构造方法的第一个参数是显示在button上的标签文本。第二个参数是父组件。父组件是Example组件，它继承了QWiget类。
 
-1
-qbtn.clicked.connect(QCoreApplication.instance().quit)
- 
+    qbtn.clicked.connect(QCoreApplication.instance().quit)
 
-在PyQt5中，事件处理系统由信号&槽机制建立。如果我们点击了按钮，信号clicked被发送。槽可以是Qt内置的槽或Python 的一个方法调用。QCoreApplication类包含了主事件循环；它处理和转发所有事件。instance()方法给我们返回一个实例化对象。注意QCoreAppli类由QApplication创建。点击信号连接到quit()方法，将结束应用。事件通信在两个对象之间进行：发送者和接受者。发送者是按钮，接受者是应用对象。
+在PyQt5中，事件处理系统由信号&槽机制建立。如果我们点击了按钮，信号clicked被发送。槽可以是Qt内置的槽或Python的一个方法调用。QCoreApplication类包含了主事件循环；它处理和转发所有事件。instance()方法给我们返回一个实例化对象。注意QCoreAppli类由QApplication创建。点击信号连接到quit()方法，将结束应用。事件通信在两个对象之间进行：发送者和接受者。发送者是按钮，接受者是应用对象。
 
 Quit buttonFigure: Quit button
 
 Message Box
 默认的，如果我们点击了标题栏上的x按钮，QWidget会被关闭。又是我们希望修改这个默认动作。举个例子，如果我们有个文件在编辑器内打开，并且我们对这个文件做了一些修改。 我们显示一个message box来确认这个动作。
 
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-44
-45
-46
-47
-48
-49
-50
-51
-#!/usr/bin/python3
-# -*- coding: utf-8 -*-
- 
 """
 ZetCode PyQt5 tutorial
  
