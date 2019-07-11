@@ -22,6 +22,6 @@ if __name__ == '__main__':
     w.resize(250, 150)
     w.move(300, 300)
     w.setWindowTitle('Simple')
-    w.show()
+    w.show() 
 
     sys.exit(app.exec_())
