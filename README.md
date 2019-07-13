@@ -76,10 +76,14 @@ PyQt5 不支持任何在 Qt 5.0 版本中弃用或取消的 API.
         
         sys.exit(app.exec_())
 上面的代码示例会在屏幕上显示一个小窗口。
+
     import sys
     from PyQt5.QtWidgets import QApplication, QWidget
+
 这里我们进行了一些必要模块的导入。最基础的widget组件位于PyQt5.QtWidget模块中
+
     app = QApplication(sys.argv)
+    
 所有的PyQt5应用必须创建一个应用（Application）对象。**sys.argv参数是一个来自命令行的参数列表。Python脚本可以在shell中运行。这是我们用来控制我们应用启动的一种方法。**
     w = QWidget()
 Qwidget组件是PyQt5中所有用户界面类的基础类。我们给QWidget提供了默认的构造方法。默认构造方法没有父类。没有父类的widget组件将被作为窗口使用。
