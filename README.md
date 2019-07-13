@@ -301,17 +301,509 @@ text参数是将显示在按钮中的内容。parent参数是一个用来放置�
 
 在PyQt5中，事件处理系统由信号&槽机制建立。如果我们点击了按钮，信号clicked被发送。槽可以是Qt内置的槽或Python的一个方法调用。QCoreApplication类包含了主事件循环；它处理和转发所有事件。instance()方法给我们返回一个实例化对象。注意QCoreAppli类由QApplication创建。点击信号连接到quit()方法，将结束应用。事件通信在两个对象之间进行：发送者和接受者。发送者是按钮，接受者是应用对象。
 
-Quit buttonFigure: Quit button
+    Quit buttonFigure: Quit button
 
-Message Box
+## Message Box
 默认的，如果我们点击了标题栏上的x按钮，QWidget会被关闭。又是我们希望修改这个默认动作。举个例子，如果我们有个文件在编辑器内打开，并且我们对这个文件做了一些修改。 我们显示一个message box来确认这个动作。
+**005.py**
+    """
+    ZetCode PyQt5 tutorial
+    
+    This program shows a confirmation
+    message box when we click on the close
+    button of the application window.
+    
+    author: Jan Bodnar
+    website: zetcode.com
+    last edited: January 2015
+    """
+    
+    import sys
+    from PyQt5.QtWidgets import QWidget, QMessageBox, QApplication
+    
+    
+    class Example(QWidget):
+        
+        def __init__(self):
+            super().__init__()
+            
+            self.initUI()
+            
+            
+        def initUI(self):              
+            
+            self.setGeometry(300, 300, 250, 150)       
+            self.setWindowTitle('Message box')   
+            self.show()
+            
+            
+        def closeEvent(self, event):
+            
+            reply = QMessageBox.question(self, 'Message',
+                "Are you sure to quit?", QMessageBox.Yes |
+                QMessageBox.No, QMessageBox.No)
+    
+            if reply == QMessageBox.Yes:
+                event.accept()
+            else:
+                event.ignore()       
+            
+            
+    if __name__ == '__main__':
+        
+        app = QApplication(sys.argv)
+        ex = Example()
+        sys.exit(app.exec_())
+ 
 
+如果我们关闭一个QWidget，QCloseEvent类事件将被生成。要修改组件动作我们需要重新实现closeEvent()事件处理方法。
+
+
+    reply = QMessageBox.question(self, 'Message',
+        "Are you sure to quit?", QMessageBox.Yes |
+        QMessageBox.No, QMessageBox.No)
+ 
+
+我们现实一个带两个按钮的message box：YES和No按钮。代码中第一个字符串的内容被显示在标题栏上。第二个字符串是对话框上显示的文本。第三个参数指定了显示在对话框上的按钮集合。最后一个参数是默认选中的按钮。这个按钮一开始就获得焦点。返回值被储存在reply变量中。
+
+    if reply == QtGui.QMessageBox.Yes:
+        event.accept()
+    else:
+        event.ignore()
+
+在这里我们测试一下返回值。代码逻辑是如果我们点击Yes按钮，我们接收到的事件关闭事件，这将导致了组件的关闭和应用的结束。否则不是点击Yes按钮的话我们将忽略将关闭事件。
+
+Message boxFigure: Message box
+
+## 屏幕上的居中窗口
+下面的脚本展示我们如何把窗口居中显示到桌面窗口。
+**006.py**
+    #!/usr/bin/python3
+    # -*- coding: utf-8 -*-
+    
+    """
+    ZetCode PyQt5 tutorial
+    
+    This program centers a window
+    on the screen.
+    
+    author: Jan Bodnar
+    website: zetcode.com
+    last edited: January 2015
+    """
+    
+    import sys
+    from PyQt5.QtWidgets import QWidget, QDesktopWidget, QApplication
+    
+    
+    class Example(QWidget):
+        
+        def __init__(self):
+            super().__init__()
+            
+            self.initUI()
+            
+            
+        def initUI(self):              
+            
+            self.resize(250, 150)
+            self.center()
+            
+            self.setWindowTitle('Center')   
+            self.show()
+            
+            
+        def center(self):
+            
+            qr = self.frameGeometry()
+            cp = QDesktopWidget().availableGeometry().center()
+            qr.moveCenter(cp)
+            self.move(qr.topLeft())
+            
+            
+    if __name__ == '__main__':
+        
+        app = QApplication(sys.argv)
+        ex = Example()
+        sys.exit(app.exec_()) 
+ 
+
+QtGui.QDesktopWidget类提供了我们**桌面窗口的信息**，包含了屏幕尺寸。
+
+    self.center() 
+
+将窗口居中放置的代码在自定义的center()方法中。
+
+    qr = self.frameGeometry()
+
+我们获得主窗口的一个矩形特定几何图形。这包含了窗口的框架。
+
+    cp = QDesktopWidget().availableGeometry().center()
+
+我们算出相对于显示器的绝对值。并且从这个绝对值中，我们获得了屏幕中心点。
+
+    qr.moveCenter(cp)
+
+我们的矩形已经设置好了它的宽和高。现在我们把矩形的中心设置到屏幕的中间去。矩形的大小并不会改变。
+
+    self.move(qr.topLeft())
+
+我们移动了应用窗口的左上方的点到qr矩形的左上方的点，因此居中显示在我们的屏幕上。
+这是PyQt5教程的一部分，这部分涵盖了一些基础知识。
+
+# PyQt5中的菜单和工具栏
+在这部分的PyQt5教程中，我们将创建菜单和工具栏。菜单式位于菜单栏的一组命令操作。工具栏是应用窗体中由按钮和一些常规命令操作组成的组件。
+
+## 主窗口
+QMainWindow类提供了一个应用主窗口。默认创建一个拥有状态栏、工具栏和菜单栏的经典应用窗口骨架。
+
+## 状态栏
+状态栏是用来显示状态信息的组件。
+**007.py**
+    #!/usr/bin/python3
+    # -*- coding: utf-8 -*-
+    
+    """
+    ZetCode PyQt5 tutorial
+    
+    This program creates a statusbar.
+    
+    author: Jan Bodnar
+    website: zetcode.com
+    last edited: January 2015
+    """
+    
+    import sys
+    from PyQt5.QtWidgets import QMainWindow, QApplication
+    
+    
+    class Example(QMainWindow):
+        
+        def __init__(self):
+            super().__init__()
+            
+            self.initUI()
+            
+            
+        def initUI(self):              
+            
+            self.statusBar().showMessage('Ready')
+            
+            self.setGeometry(300, 300, 250, 150)
+            self.setWindowTitle('Statusbar')   
+            self.show()
+    
+    
+    if __name__ == '__main__':
+        
+        app = QApplication(sys.argv)
+        ex = Example()
+        sys.exit(app.exec_())
+状态栏由QMainWindow组件帮助创建完成（依赖于QMainWindow组件）。
+
+    self.statusBar().showMessage('Ready')
+为了得到状态栏，我们调用了QtGui.QMainWindow类的statusBar()方法。第一次调用这个方法创建了一个状态栏。随后方法返回状态栏对象。然后用showMessage()方法在状态栏上显示一些信息。
+
+菜单栏
+菜单栏是GUI应用的常规组成部分。是位于各种菜单中的一组命令操作（Mac OS 对待菜单栏有些不同。为了获得全平台一致的效果，我们可以在代码中加入一行：menubar.setNativeMenuBar(False)）。
+
+    #!/usr/bin/python3
+    # -*- coding: utf-8 -*-
+    
+    """
+    ZetCode PyQt5 tutorial
+    
+    This program creates a menubar. The
+    menubar has one menu with an exit action.
+    
+    author: Jan Bodnar
+    website: zetcode.com
+    last edited: January 2015
+    """
+    
+    import sys
+    from PyQt5.QtWidgets import QMainWindow, QAction, qApp, QApplication
+    from PyQt5.QtGui import QIcon
+    
+    
+    class Example(QMainWindow):
+        
+        def __init__(self):
+            super().__init__()
+            
+            self.initUI()
+            
+            
+        def initUI(self):              
+            
+            exitAction = QAction(QIcon('exit.png'), '&Exit', self)       
+            exitAction.setShortcut('Ctrl+Q')
+            exitAction.setStatusTip('Exit application')
+            exitAction.triggered.connect(qApp.quit)
+    
+            self.statusBar()
+    
+            menubar = self.menuBar()
+            fileMenu = menubar.addMenu('&File')
+            fileMenu.addAction(exitAction)
+            
+            self.setGeometry(300, 300, 300, 200)
+            self.setWindowTitle('Menubar')   
+            self.show()
+            
+            
+    if __name__ == '__main__':
+        
+        app = QApplication(sys.argv)
+        ex = Example()
+        sys.exit(app.exec_())
+ 
+
+在上面的例子中，我们创建了有一个菜单项的菜单栏。这个菜单项包含一个选中后中断应用的动作。
+
+    exitAction = QAction(QIcon('exit.png'), '&Exit', self)       
+    exitAction.setShortcut('Ctrl+Q')
+    exitAction.setStatusTip('Exit application')
+
+QAction是一个用于菜单栏、工具栏或自定义快捷键的抽象动作行为。在上面的三行中，我们创建了一个有指定图标和文本为'Exit'的标签。另外，还为这个动作定义了一个快捷键。第三行创建一个当我们鼠标浮于菜单项之上就会显示的一个状态提示。
+
+
+    exitAction.triggered.connect(qApp.quit)
+当我们选中特定的动作，一个触发信号会被发射。信号连接到QApplication组件的quit()方法。这样就中断了应用。
+
+    menubar = self.menuBar()
+    fileMenu = menubar.addMenu('&File')
+    fileMenu.addAction(exitAction)
+menuBar()方法创建了一个菜单栏。我们创建一个file菜单，然后将退出动作添加到file菜单中。
+
+工具栏
+菜单可以集成所有命令，这样我们可以在应用中使用这些被集成的命令。工具栏提供了一个快速访问常用命令的方式。
+**009.py**
+    #!/usr/bin/python3
+    # -*- coding: utf-8 -*-
+    
+    """
+    ZetCode PyQt5 tutorial
+    
+    This program creates a toolbar.
+    The toolbar has one action, which
+    terminates the application, if triggered.
+    
+    author: Jan Bodnar
+    website: zetcode.com
+    last edited: January 2015
+    """
+    
+    import sys
+    from PyQt5.QtWidgets import QMainWindow, QAction, qApp, QApplication
+    from PyQt5.QtGui import QIcon
+    
+    
+    class Example(QMainWindow):
+        
+        def __init__(self):
+            super().__init__()
+            
+            self.initUI()
+            
+            
+        def initUI(self):              
+            
+            exitAction = QAction(QIcon('exit24.png'), 'Exit', self)
+            exitAction.setShortcut('Ctrl+Q')
+            exitAction.triggered.connect(qApp.quit)
+            
+            self.toolbar = self.addToolBar('Exit')
+            self.toolbar.addAction(exitAction)
+            
+            self.setGeometry(300, 300, 300, 200)
+            self.setWindowTitle('Toolbar')   
+            self.show()
+            
+            
+    if __name__ == '__main__':
+        
+        app = QApplication(sys.argv)
+        ex = Example()
+        sys.exit(app.exec_())
+ 
+
+上述例子中，我们创建了一个简单的工具栏。工具栏有一个动作，当这个退出动作被触发时应用将会被中断。
+
+    exitAction = QAction(QIcon('exit24.png'), 'Exit', self)
+    exitAction.setShortcut('Ctrl+Q')
+    exitAction.triggered.connect(qApp.quit)
+ 
+
+我们创建了一个动作对象，和之前菜单栏中的部分代码相似。这个动作有一个标签，图标和快捷键。并且将QtGui.QMainWindow的quit()方法连接到了触发信号上。
+
+    self.toolbar = self.addToolBar('Exit')
+    self.toolbar.addAction(exitAction)
+ 
+
+这里我们创建了一个工具栏，并且在其中插入一个动作对象。
+
+ToolbarFigure: Toolbar
+
+将几个组件放在一起使用
+在上面的例子中，我们创建了菜单栏、工具栏和状态栏。下面我们将创建一个中心组件。
+**010.py**
+    #!/usr/bin/python3
+    # -*- coding: utf-8 -*-
+    
+    """
+    ZetCode PyQt5 tutorial
+    
+    This program creates a skeleton of
+    a classic GUI application with a menubar,
+    toolbar, statusbar, and a central widget.
+    
+    author: Jan Bodnar
+    website: zetcode.com
+    last edited: January 2015
+    """
+    
+    import sys
+    from PyQt5.QtWidgets import QMainWindow, QTextEdit, QAction, QApplication
+    from PyQt5.QtGui import QIcon
+    
+    
+    class Example(QMainWindow):
+        
+        def __init__(self):
+            super().__init__()
+            
+            self.initUI()
+            
+            
+        def initUI(self):              
+            
+            textEdit = QTextEdit()
+            self.setCentralWidget(textEdit)
+    
+            exitAction = QAction(QIcon('exit24.png'), 'Exit', self)
+            exitAction.setShortcut('Ctrl+Q')
+            exitAction.setStatusTip('Exit application')
+            exitAction.triggered.connect(self.close)
+    
+            self.statusBar()
+    
+            menubar = self.menuBar()
+            fileMenu = menubar.addMenu('&File')
+            fileMenu.addAction(exitAction)
+    
+            toolbar = self.addToolBar('Exit')
+            toolbar.addAction(exitAction)
+            
+            self.setGeometry(300, 300, 350, 250)
+            self.setWindowTitle('Main window')   
+            self.show()
+            
+            
+    if __name__ == '__main__':
+        
+        app = QApplication(sys.argv)
+        ex = Example()
+        sys.exit(app.exec_())
+ 
+
+事例代码创建了一个带有菜单栏、工具栏和状态栏的经典GUI应用骨架。
+
+    textEdit = QTextEdit()
+    self.setCentralWidget(textEdit)
+ 
+
+在这里我们创建了一个文本编辑框组件。我们将它设置成QMainWindow的中心组件。中心组件占据了所有剩下的空间。
+
+Main windowFigure: Main window
+
+在这个部分的PyQt5教程中，我们使用了菜单、工具栏、状态栏和一个应用主窗口。
+
+PyQt5中的布局管理
+布局管理是GUI编程中的一个重要方面。布局管理是一种如何在应用窗口上防止组件的一种方法。我们可以通过两种基础方式来管理布局。我们可以使用绝对定位和布局类。
+
+绝对定位
+程序指定了组件的位置并且每个组件的大小用像素作为单位来丈量。当你使用了绝对定位，我们需要知道下面的几点限制：
+
+-   如果我们改变了窗口大小，组件的位置和大小并不会发生改变。
+-   在不同平台上，应用的外观可能不同
+-   改变我们应用中的字体的话可能会把应用弄得一团糟。
+-   如果我们决定改变我们的布局，我们必须完全重写我们的布局，这样非常乏味和浪费时间。
+-   下面的例子中，使用了绝对坐标来定位组件
+
+**011.py**
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+ 
+    """
+    ZetCode PyQt5 tutorial
+    
+    This example shows three labels on a window
+    using absolute positioning.
+    
+    author: Jan Bodnar
+    website: zetcode.com
+    last edited: January 2015
+    """
+    
+    import sys
+    from PyQt5.QtWidgets import QWidget, QLabel, QApplication
+    
+    
+    class Example(QWidget):
+        
+        def __init__(self):
+            super().__init__()
+            
+            self.initUI()
+            
+            
+        def initUI(self):
+            
+            lbl1 = QLabel('Zetcode', self)
+            lbl1.move(15, 10)
+    
+            lbl2 = QLabel('tutorials', self)
+            lbl2.move(35, 40)
+            
+            lbl3 = QLabel('for programmers', self)
+            lbl3.move(55, 70)       
+            
+            self.setGeometry(300, 300, 250, 150)
+            self.setWindowTitle('Absolute')   
+            self.show()
+            
+            
+    if __name__ == '__main__':
+        
+        app = QApplication(sys.argv)
+        ex = Example()
+        sys.exit(app.exec_())
+　　
+
+我们使用move()方法来定位我们的组件。在上面的例子中我们使用move()方法定位了一些标签组件。在使用move()方法时，我们给move()方法提供了x和y坐标作为参数。move()使用的坐标系统是从左上角开始计算的。x值从左到右增长。y值从上到下增长。
+
+
+    lbl1 = QLabel('Zetcode', self)
+    lbl1.move(15, 10)
+　　
+
+将标签组件定位在x=15，y=10的坐标位置。
+
+Absolute positioningFigure: Absolute positioning
+
+箱布局
+布局管理器的布局管理类非常灵活，实用。它是将组件定位在窗口上的首选方式。QHBoxLayout和QVBoxLayout是两个基础布局管理类，他们水平或垂直的线性排列组件。想象一下我们需要在右下角排列两个按钮。为了使用箱布局，我们将使用一个水平箱布局和垂直箱布局来实现。同样为了使用一些必要的空白，我们将添加一些拉伸因子。
+**012.py**
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+ 
 """
 ZetCode PyQt5 tutorial
  
-This program shows a confirmation
-message box when we click on the close
-button of the application window.
+In this example, we position two push
+buttons in the bottom-right corner
+of the window.
  
 author: Jan Bodnar
 website: zetcode.com
@@ -319,7 +811,8 @@ last edited: January 2015
 """
  
 import sys
-from PyQt5.QtWidgets import QWidget, QMessageBox, QApplication
+from PyQt5.QtWidgets import (QWidget, QPushButton,
+    QHBoxLayout, QVBoxLayout, QApplication)
  
  
 class Example(QWidget):
@@ -330,23 +823,25 @@ class Example(QWidget):
         self.initUI()
          
          
-    def initUI(self):              
+    def initUI(self):
          
-        self.setGeometry(300, 300, 250, 150)       
-        self.setWindowTitle('Message box')   
-        self.show()
-         
-         
-    def closeEvent(self, event):
-         
-        reply = QMessageBox.question(self, 'Message',
-            "Are you sure to quit?", QMessageBox.Yes |
-            QMessageBox.No, QMessageBox.No)
+        okButton = QPushButton("OK")
+        cancelButton = QPushButton("Cancel")
  
-        if reply == QMessageBox.Yes:
-            event.accept()
-        else:
-            event.ignore()       
+        hbox = QHBoxLayout()
+        hbox.addStretch(1)
+        hbox.addWidget(okButton)
+        hbox.addWidget(cancelButton)
+ 
+        vbox = QVBoxLayout()
+        vbox.addStretch(1)
+        vbox.addLayout(hbox)
+         
+        self.setLayout(vbox)   
+         
+        self.setGeometry(300, 300, 300, 150)
+        self.setWindowTitle('Buttons')   
+        self.show()
          
          
 if __name__ == '__main__':
@@ -354,164 +849,205 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = Example()
     sys.exit(app.exec_())
- 
+　　
 
-如果我们关闭一个QWidget，QCloseEvent类事件将被生成。要修改组件动作我们需要重新实现closeEvent()事件处理方法。
+例子在右下角放置了两个按钮。当我们改变应用窗口大小时，它们会相对于应用窗口不改变位置。在这个例子中我们使用了QHBoxLayout和QVBoxLayout两个布局类。
 
-1
-2
-3
-reply = QMessageBox.question(self, 'Message',
-    "Are you sure to quit?", QMessageBox.Yes |
-    QMessageBox.No, QMessageBox.No)
- 
+    okButton = QPushButton("OK")
+    cancelButton = QPushButton("Cancel")
+　　
 
-我们现实一个带两个按钮的message box：YES和No按钮。代码中第一个字符串的内容被显示在标题栏上。第二个字符串是对话框上显示的文本。第三个参数指定了显示在对话框上的按钮集合。最后一个参数是默认选中的按钮。这个按钮一开始就获得焦点。返回值被储存在reply变量中。
+在这里我们创建了两个按钮。
 
-1
-2
-3
-4
-if reply == QtGui.QMessageBox.Yes:
-    event.accept()
-else:
-    event.ignore()
- 
+    hbox = QHBoxLayout()
+    hbox.addStretch(1)
+    hbox.addWidget(okButton)
+    hbox.addWidget(cancelButton)
+　　
+这里我们创建了一个水平箱布局，并且增加了一个**拉伸因子**和**两个按钮**。拉伸因子在两个按钮之前增加了一个可伸缩空间。这会将按钮推到窗口的右边。
 
-在这里我们测试一下返回值。代码逻辑是如果我们点击Yes按钮，我们接收到的事件关闭事件，这将导致了组件的关闭和应用的结束。否则不是点击Yes按钮的话我们将忽略将关闭事件。
+    vbox = QVBoxLayout()
+    vbox.addStretch(1)
+    vbox.addLayout(hbox)
+　　
 
-Message boxFigure: Message box
+为了创建必要的布局，我们把水平布局放置在垂直布局内。拉伸因子将把包含两个按钮的水平箱布局推到窗口的底边。
 
-屏幕上的居中窗口
-下面的脚本展示我们如何把窗口居中显示到桌面窗口。
+    self.setLayout(vbox)
 
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-44
-45
-46
-47
-48
-#!/usr/bin/python3
-# -*- coding: utf-8 -*-
- 
-"""
-ZetCode PyQt5 tutorial
- 
-This program centers a window
-on the screen.
- 
-author: Jan Bodnar
-website: zetcode.com
-last edited: January 2015
-"""
- 
-import sys
-from PyQt5.QtWidgets import QWidget, QDesktopWidget, QApplication
- 
- 
-class Example(QWidget):
+最后，我们设置一下窗口的主布局。
+
+
+## ButtonsFigure: Buttons
+
+网格布局
+最常用的布局类是网格布局。这个布局使用行了列分割空间。要创建一个网格布局，我们需要使用QGridLayout类。
+**013.py**
+    #!/usr/bin/python3
+    # -*- coding: utf-8 -*-
+    
+    """
+    ZetCode PyQt5 tutorial
+    
+    In this example, we create a skeleton
+    of a calculator using a QGridLayout.
+    
+    author: Jan Bodnar
+    website: zetcode.com
+    last edited: January 2015
+    """
+    
+    import sys
+    from PyQt5.QtWidgets import (QWidget, QGridLayout,
+        QPushButton, QApplication)
+    
+    
+    class Example(QWidget):
+        
+        def __init__(self):
+            super().__init__()
+            
+            self.initUI()
+            
+            
+        def initUI(self):
+            
+            grid = QGridLayout()
+            self.setLayout(grid)
+    
+            names = ['Cls', 'Bck', '', 'Close',
+                    '7', '8', '9', '/',
+                    '4', '5', '6', '*',
+                    '1', '2', '3', '-',
+                    '0', '.', '=', '+']
+            
+            positions = [(i,j) for i in range(5) for j in range(4)]
+            
+            for position, name in zip(positions, names):
+                
+                if name == '':
+                    continue
+                button = QPushButton(name)
+                grid.addWidget(button, *position)
+                
+            self.move(300, 150)
+            self.setWindowTitle('Calculator')
+            self.show()
+            
+            
+    if __name__ == '__main__':
+        
+        app = QApplication(sys.argv)
+        ex = Example()
+        sys.exit(app.exec_())
+　　
+
+在我们的例子中，我们创建了一个全是按钮的网格布局。
+
+grid = QGridLayout()
+self.setLayout(grid)
+实例化QGridLayout类，并且把这个类设为应用窗口的布局。
+
+
+    names = ['Cls', 'Bck', '', 'Close',
+                '7', '8', '9', '/',
+            '4', '5', '6', '*',
+                '1', '2', '3', '-',
+            '0', '.', '=', '+']
+这些标签会在之后的按钮中使用。
+
+    positions = [(i,j) for i in range(5) for j in range(4)]
+我们创建了一个网格的定位列表。
+
+    for position, name in zip(positions, names):
      
-    def __init__(self):
-        super().__init__()
-         
-        self.initUI()
-         
-         
-    def initUI(self):              
-         
-        self.resize(250, 150)
-        self.center()
-         
-        self.setWindowTitle('Center')   
-        self.show()
-         
-         
-    def center(self):
-         
-        qr = self.frameGeometry()
-        cp = QDesktopWidget().availableGeometry().center()
-        qr.moveCenter(cp)
-        self.move(qr.topLeft())
-         
-         
-if __name__ == '__main__':
-     
-    app = QApplication(sys.argv)
-    ex = Example()
-    sys.exit(app.exec_()) 
- 
+        if name == '':
+            continue
+        button = QPushButton(name)
+        grid.addWidget(button, *position)
+创建出按钮组件，并使用addWidget()方法向布局中添加按钮。
 
-QtGui.QDesktopWidget类提供了我们桌面窗口的信息，包含了屏幕尺寸。
+Calculator skeletonFigure: Calculator skeleton
 
-1
-self.center()
- 
+## 文本审阅窗口示例
 
-将窗口居中放置的代码在自定义的center()方法中。
+在网格中，组件可以跨多列或多行。在这个例子中，我们对它进行一下说明。
 
-1
-qr = self.frameGeometry()
- 
+    #!/usr/bin/python3
+    # -*- coding: utf-8 -*-
+    
+    """
+    ZetCode PyQt5 tutorial
+    
+    In this example, we create a bit
+    more complicated window layout using
+    the QGridLayout manager.
+    
+    author: Jan Bodnar
+    website: zetcode.com
+    last edited: January 2015
+    """
+    
+    import sys
+    from PyQt5.QtWidgets import (QWidget, QLabel, QLineEdit,
+        QTextEdit, QGridLayout, QApplication)
+    
+    
+    class Example(QWidget):
+        
+        def __init__(self):
+            super().__init__()
+            
+            self.initUI()
+            
+            
+        def initUI(self):
+            
+            title = QLabel('Title')
+            author = QLabel('Author')
+            review = QLabel('Review')
+    
+            titleEdit = QLineEdit()
+            authorEdit = QLineEdit()
+            reviewEdit = QTextEdit()
+    
+            grid = QGridLayout()
+            grid.setSpacing(10)
+    
+            grid.addWidget(title, 1, 0)
+            grid.addWidget(titleEdit, 1, 1)
+    
+            grid.addWidget(author, 2, 0)
+            grid.addWidget(authorEdit, 2, 1)
+    
+            grid.addWidget(review, 3, 0)
+            grid.addWidget(reviewEdit, 3, 1, 5, 1)
+            
+            self.setLayout(grid)
+            
+            self.setGeometry(300, 300, 350, 300)
+            self.setWindowTitle('Review')   
+            self.show()
+            
+            
+    if __name__ == '__main__':
+        
+        app = QApplication(sys.argv)
+        ex = Example()
+        sys.exit(app.exec_())
+我们创建了包含三个标签，两个单行编辑框和一个文本编辑框组件的窗口。布局使用了QGridLayout布局。
 
-我们获得主窗口的一个矩形特定几何图形。这包含了窗口的框架。
+    grid = QGridLayout()
+    grid.setSpacing(10)
+我们创建了一个网格布局并且设置了组件之间的间距。
 
-1
-cp = QDesktopWidget().availableGeometry().center()
- 
 
-我们算出相对于显示器的绝对值。并且从这个绝对值中，我们获得了屏幕中心点。
+    grid.addWidget(reviewEdit, 3, 1, 5, 1)
+如果我们向网格布局中增加一个组件，我们可以提供组件的跨行和跨列参数。在这个例子中，我们让reviewEdit组件跨了5行。
+    void QGridLayout::addWidget(QWidget * widget, int fromRow, int fromColumn, int rowSpan, int columnSpan, Qt::Alignment alignment = 0)
+This is an overloaded function.
 
-1
-qr.moveCenter(cp)
- 
+Review exampleFigure: Review example
 
-我们的矩形已经设置好了它的宽和高。现在我们把矩形的中心设置到屏幕的中间去。矩形的大小并不会改变。
+这部分的PyQt5教程专门用于讲述布局管理。
 
-1
-self.move(qr.topLeft())
- 
-
-我们移动了应用窗口的左上方的点到qr矩形的左上方的点，因此居中显示在我们的屏幕上。
-这是PyQt5教程的一部分，这部分涵盖了一些基础知识。
