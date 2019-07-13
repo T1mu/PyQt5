@@ -810,7 +810,7 @@ PyQt5中的布局管理
 
 Absolute positioningFigure: Absolute positioning
 
-箱布局
+## 箱布局
 布局管理器的布局管理类非常灵活，实用。它是将组件定位在窗口上的首选方式。QHBoxLayout和QVBoxLayout是两个基础布局管理类，他们水平或垂直的线性排列组件。想象一下我们需要在右下角排列两个按钮。为了使用箱布局，我们将使用一个水平箱布局和垂直箱布局来实现。同样为了使用一些必要的空白，我们将添加一些拉伸因子。
 **012.py**
     #!/usr/bin/python3
@@ -896,11 +896,10 @@ Absolute positioningFigure: Absolute positioning
 最后，我们设置一下窗口的主布局。
 
 
-## ButtonsFigure: Buttons
-
-网格布局
+## ButtonsFigure: Buttons 网格布局
 最常用的布局类是网格布局。这个布局使用行了列分割空间。要创建一个网格布局，我们需要使用QGridLayout类。
 **013.py**
+
     #!/usr/bin/python3
     # -*- coding: utf-8 -*-
     
@@ -1068,3 +1067,1402 @@ Review exampleFigure: Review example
 
 这部分的PyQt5教程专门用于讲述布局管理。
 
+PyQt5中的事件和信号
+在这部分PyQt5编程教程中，我们探索应用中事件和信号的发生。
+
+事件
+所有的GUI应用都是**事件**驱动的。事件主要由应用的**用户操作**产生的。但是事件可能由其他条件触发，比如：一个网络连接，一个窗口管理器，一个定时器，这些动作都可能触发事件的产生。当我们调用应用的exec_()方法时，应用进入了主循环。主循环用于检测事件的产生并且将事件送到用于处理的对象中去。
+
+在事件模型，有三个参与者
+
+- 事件源
+- 事件对象
+- 事件目标
+事件源是状态发生改变的对象。它产生了事件。事件对象(evnet)封装了事件源中的状态变化。事件目标是想要被通知的对象。事件源对象代表了处理一个事件直到事件目标做出响应的任务。
+
+PyQt5有一个独一无二的信号和槽机制来处理事件。信号和槽用于对象之间的通信。当指定事件发生，一个事件信号会被发射。槽可以被任何Python脚本调用。当和槽连接的信号被发射时，槽会被调用。
+
+## 信号 & 槽
+这个例子演示了PyQt5中的信号和槽的使用。
+
+    #!/usr/bin/python3
+    # -*- coding: utf-8 -*-
+    
+    """
+    ZetCode PyQt5 tutorial
+    
+    In this example, we connect a signal
+    of a QSlider to a slot of a QLCDNumber.
+    
+    author: Jan Bodnar
+    website: zetcode.com
+    last edited: January 2015
+    """
+    
+    import sys
+    from PyQt5.QtCore import Qt
+    from PyQt5.QtWidgets import (QWidget, QLCDNumber, QSlider,
+        QVBoxLayout, QApplication)
+    
+    
+    class Example(QWidget):
+        
+        def __init__(self):
+            super().__init__()
+            
+            self.initUI()
+            
+            
+        def initUI(self):
+            
+            lcd = QLCDNumber(self)
+            sld = QSlider(Qt.Horizontal, self)
+    
+            vbox = QVBoxLayout()
+            vbox.addWidget(lcd)
+            vbox.addWidget(sld)
+    
+            self.setLayout(vbox)
+            sld.valueChanged.connect(lcd.display)
+            
+            self.setGeometry(300, 300, 250, 150)
+            self.setWindowTitle('Signal & slot')
+            self.show()
+            
+    
+    if __name__ == '__main__':
+        
+        app = QApplication(sys.argv)
+        ex = Example()
+        sys.exit(app.exec_())
+　　
+
+在我们的例子中，我们显示了一个QtGui.QLCDNumber和一个QtGui.QSlider类。我们拖动滑块条的把手，lcd数字会变化。
+
+    sld.valueChanged.connect(lcd.display)
+　　
+
+这里，我们将滑块条的valueChanged信号和lcd数字显示的display槽连接在一起。
+
+发送者是一个发送了信号的对象。接受者是一个接受了信号的对象。槽是对信号做出反应的方法。
+
+## Signal & slotFigure: Signal & slot
+
+重写事件处理函数
+PyQt中的事件处理通常通过重写事件处理函数来处理。
+
+    #!/usr/bin/python3
+    # -*- coding: utf-8 -*-
+    
+    """
+    ZetCode PyQt5 tutorial
+    
+    In this example, we reimplement an
+    event handler.
+    
+    author: Jan Bodnar
+    website: zetcode.com
+    last edited: January 2015
+    """
+    
+    import sys
+    from PyQt5.QtCore import Qt
+    from PyQt5.QtWidgets import QWidget, QApplication
+    
+    
+    class Example(QWidget):
+        
+        def __init__(self):
+            super().__init__()
+            
+            self.initUI()
+            
+            
+        def initUI(self):     
+            
+            self.setGeometry(300, 300, 250, 150)
+            self.setWindowTitle('Event handler')
+            self.show()
+            
+            
+        def keyPressEvent(self, e):
+            
+            if e.key() == Qt.Key_Escape:
+                self.close()
+            
+            
+    if __name__ == '__main__':
+        
+        app = QApplication(sys.argv)
+        ex = Example()
+        sys.exit(app.exec_())
+
+在我们的例子中，我们重写了keyPressEvent()事件处理函数。
+
+    def keyPressEvent(self, e):
+        
+        if e.key() == Qt.Key_Escape:
+            self.close()
+
+
+如果我们点击了Esc按钮，应用将会被终止。
+
+事件发送者
+有时需要方便的知道哪一个组件是信号发送者。因此，PyQt5拥有了sender()方法来解决这个问题。
+**017.py**
+
+    #!/usr/bin/python3
+    # -*- coding: utf-8 -*-
+    
+    """
+    ZetCode PyQt5 tutorial
+    
+    In this example, we determine the event sender
+    object.
+    
+    author: Jan Bodnar
+    website: zetcode.com
+    last edited: January 2015
+    """
+    import sys
+    from PyQt5.QtWidgets import QMainWindow, QPushButton, QApplication
+    
+    class Example(QMainWindow):
+        
+        def __init__(self):
+            super().__init__()
+            
+            self.initUI()
+            
+            
+        def initUI(self):     
+    
+            btn1 = QPushButton("Button 1", self)
+            btn1.move(30, 50)
+    
+            btn2 = QPushButton("Button 2", self)
+            btn2.move(150, 50)
+        
+            btn1.clicked.connect(self.buttonClicked)           
+            btn2.clicked.connect(self.buttonClicked)
+            
+            self.statusBar()
+            
+            self.setGeometry(300, 300, 290, 150)
+            self.setWindowTitle('Event sender')
+            self.show()
+            
+            
+        def buttonClicked(self):
+        
+            sender = self.sender()
+            self.statusBar().showMessage(sender.text() + ' was pressed')
+         
+         
+    if __name__ == '__main__':
+        
+        app = QApplication(sys.argv)
+        ex = Example()
+        sys.exit(app.exec_())
+在我们的例子中，我们有两个按钮。在buttonClikced()方法中，我们调用sender()方法来判断哪一个按钮是我们按下的。
+
+    btn1.clicked.connect(self.buttonClicked)           
+    btn2.clicked.connect(self.buttonClicked)
+两个按钮都连接到了同一个槽中。
+
+def buttonClicked(self):
+   
+    sender = self.sender()
+    self.statusBar().showMessage(sender.text() + ' was pressed')
+我们调用sender()方法判断发送信号的信号源是哪一个。然后在应用的状态栏上显示被按下的按钮的标签内容。
+
+## Event senderFigure: Event sender
+
+发送信号
+从QObejct生成的对象可以发送信号。在下面的例子中我们将会看到怎样去发送自定义的信号。
+
+    #!/usr/bin/python3
+    # -*- coding: utf-8 -*-
+    
+    """
+    ZetCode PyQt5 tutorial
+    
+    In this example, we show how to emit a
+    signal.
+    
+    author: Jan Bodnar
+    website: zetcode.com
+    last edited: January 2015
+    """
+    
+    import sys
+    from PyQt5.QtCore import pyqtSignal, QObject
+    from PyQt5.QtWidgets import QMainWindow, QApplication
+    
+    
+    class Communicate(QObject):
+        
+        closeApp = pyqtSignal()
+        
+    
+    class Example(QMainWindow):
+        
+        def __init__(self):
+            super().__init__()
+            
+            self.initUI()
+            
+            
+        def initUI(self):     
+    
+            self.c = Communicate()
+            self.c.closeApp.connect(self.close)      
+            
+            self.setGeometry(300, 300, 290, 150)
+            self.setWindowTitle('Emit signal')
+            self.show()
+            
+            
+        def mousePressEvent(self, event):
+            
+            self.c.closeApp.emit()
+            
+            
+    if __name__ == '__main__':
+        
+        app = QApplication(sys.argv)
+        ex = Example()
+        sys.exit(app.exec_())
+我们创建一个新的信号叫做closeApp。当触发鼠标点击事件时信号会被发射。信号连接到了QMainWindow的close()方法。
+
+    class Communicate(QObject):
+        
+        closeApp = pyqtSignal()
+信号使用了pyqtSignal()方法创建，并且成为外部类Communicate类的属性。
+
+
+    self.c = Communicate()
+    self.c.closeApp.connect(self.close)
+把自定义的closeApp信号连接到QMainWindow的close()槽上。
+
+    def mousePressEvent(self, event):
+        
+        self.c.closeApp.emit()
+当我们在窗口上点击一下鼠标，closeApp信号会被发射。应用中断。
+
+ 
+
+这部分的PyQt5教程中，我们概览了信号了槽机制。
+
+## PyQt5中的对话框
+对话框窗口或对话框是大多数主流GUI应用不可缺少的部分。对话是两个或更多人之间的会话。在计算机应用中，对话框是一个用来和应用对话的窗口。对话框可以用来输入数据，修改数据，改变应用设置等等。
+
+ 
+## 输入对话框
+QInputDialog提供了一个简单便利的对话框用于从用户那儿获得只一个值。输入值可以是字符串，数字，或者一个列表中的列表项。
+**019.py**
+    #!/usr/bin/python3
+    # -*- coding: utf-8 -*-
+    
+    """
+    ZetCode PyQt5 tutorial
+    
+    In this example, we receive data from
+    a QInputDialog dialog.
+    
+    author: Jan Bodnar
+    website: zetcode.com
+    last edited: January 2015
+    """
+    
+    import sys
+    from PyQt5.QtWidgets import (QWidget, QPushButton, QLineEdit,
+        QInputDialog, QApplication)
+    
+    
+    class Example(QWidget):
+        
+        def __init__(self):
+            super().__init__()
+            
+            self.initUI()
+            
+            
+        def initUI(self):     
+    
+            self.btn = QPushButton('Dialog', self)
+            self.btn.move(20, 20)
+            self.btn.clicked.connect(self.showDialog)
+            
+            self.le = QLineEdit(self)
+            self.le.move(130, 22)
+            
+            self.setGeometry(300, 300, 290, 150)
+            self.setWindowTitle('Input dialog')
+            self.show()
+            
+            
+        def showDialog(self):
+            
+            text, ok = QInputDialog.getText(self, 'Input Dialog',
+                'Enter your name:')
+            
+            if ok:
+                self.le.setText(str(text))
+            
+            
+    if __name__ == '__main__':
+        
+        app = QApplication(sys.argv)
+        ex = Example()
+        sys.exit(app.exec_())
+例子中有一个按钮和一个单行编辑框组件。按下按钮会显示输入对话框用于获得一个字符串值。在对话框中输入的值会在单行编辑框组件中显示。
+
+    text, ok = QInputDialog.getText(self, 'Input Dialog',
+        'Enter your name:')
+
+这一行会显示一个输入对话框。第一个字符串参数是对话框的标题，第二个字符串参数是对话框内的消息文本。对话框返回输入的文本内容和一个布尔值。如果我们点击了Ok按钮，布尔值就是true，反之布尔值是false（译者注：也只有按下Ok按钮时，返回的文本内容才会有值）。
+
+    if ok:
+        self.le.setText(str(text))
+
+把我们从对话框接收到的文本设置到单行编辑框组件上显示。
+
+## Input dialogFigure: Input dialog
+
+颜色选择对话框
+QColorDialog类提供了一个用于选择颜色的对话框组件。
+**020.py**
+
+    #!/usr/bin/python3
+    # -*- coding: utf-8 -*-
+    
+    """
+    ZetCode PyQt5 tutorial
+    
+    In this example, we select a color value
+    from the QColorDialog and change the background
+    color of a QFrame widget.
+    
+    author: Jan Bodnar
+    website: zetcode.com
+    last edited: January 2015
+    """
+    
+    import sys
+    from PyQt5.QtWidgets import (QWidget, QPushButton, QFrame,
+        QColorDialog, QApplication)
+    from PyQt5.QtGui import QColor
+    
+    
+    class Example(QWidget):
+        
+        def __init__(self):
+            super().__init__()
+            
+            self.initUI()
+            
+            
+        def initUI(self):     
+    
+            col = QColor(0, 0, 0)
+    
+            self.btn = QPushButton('Dialog', self)
+            self.btn.move(20, 20)
+    
+            self.btn.clicked.connect(self.showDialog)
+    
+            self.frm = QFrame(self)
+            self.frm.setStyleSheet("QWidget { background-color: %s }"
+                % col.name())
+            self.frm.setGeometry(130, 22, 100, 100)           
+            
+            self.setGeometry(300, 300, 250, 180)
+            self.setWindowTitle('Color dialog')
+            self.show()
+            
+            
+        def showDialog(self):
+        
+            col = QColorDialog.getColor()
+    
+            if col.isValid():
+                self.frm.setStyleSheet("QWidget { background-color: %s }"
+                    % col.name())
+                
+            
+    if __name__ == '__main__':
+        
+        app = QApplication(sys.argv)
+        ex = Example()
+        sys.exit(app.exec_())
+
+例子中显示了一个按钮和一个QFrame。将QFrame组件的背景设置为黑色。使用颜色选择框类，我们可以改变它的颜色。
+
+    col = QColor(0, 0, 0)
+初始化QtGuiQFrame组件的背景颜色。
+
+    col = QColorDialog.getColor()
+这一行弹出颜色选择框。
+
+    if col.isValid():
+        self.frm.setStyleSheet("QWidget { background-color: %s }"
+            % col.name())
+如果我们选中一个颜色并且点了ok按钮，会返回一个有效的颜色值。如果我们点击了Cancel按钮，不会返回选中的颜色值。我们使用样式表来定义背景颜色。
+
+## 字体选择框
+QFontDialog是一个用于选择字体的对话框组件。
+
+ 
+    #!/usr/bin/python3
+    # -*- coding: utf-8 -*-
+    
+    """
+    ZetCode PyQt5 tutorial
+    
+    In this example, we select a font name
+    and change the font of a label.
+    
+    author: Jan Bodnar
+    website: zetcode.com
+    last edited: January 2015
+    """
+    
+    import sys
+    from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QPushButton,
+        QSizePolicy, QLabel, QFontDialog, QApplication)
+    
+    
+    class Example(QWidget):
+        
+        def __init__(self):
+            super().__init__()
+            
+            self.initUI()
+            
+            
+        def initUI(self):     
+    
+            vbox = QVBoxLayout()
+    
+            btn = QPushButton('Dialog', self)
+            btn.setSizePolicy(QSizePolicy.Fixed,
+                QSizePolicy.Fixed)
+            
+            btn.move(20, 20)
+    
+            vbox.addWidget(btn)
+    
+            btn.clicked.connect(self.showDialog)
+            
+            self.lbl = QLabel('Knowledge only matters', self)
+            self.lbl.move(130, 20)
+    
+            vbox.addWidget(self.lbl)
+            self.setLayout(vbox)         
+            
+            self.setGeometry(300, 300, 250, 180)
+            self.setWindowTitle('Font dialog')
+            self.show()
+            
+            
+        def showDialog(self):
+    
+            font, ok = QFontDialog.getFont()
+            if ok:
+                self.lbl.setFont(font)
+            
+            
+    if __name__ == '__main__':
+        
+        app = QApplication(sys.argv)
+        ex = Example()
+        sys.exit(app.exec_())
+在我们的例子中，我们有一个按钮和一个表情。通过字体选择对话框，我们可以改变标签的字体。
+
+    font, ok = QFontDialog.getFont()
+在这儿我们弹出一个字体对话框。getFont()方法返回字体名字和布尔值。如果用户点击了OK，布尔值为True；否则为False。
+
+    if ok:
+        self.label.setFont(font)
+如果我们点击了Ok按钮，标签字体会被改变。
+
+Font dialogFigure: Font dialog
+
+## 文件对话框
+文件对话框是用于让用户选择文件或目录的对话框。可以选择文件的打开和保存。
+
+    #!/usr/bin/python3
+    # -*- coding: utf-8 -*-
+    
+    """
+    ZetCode PyQt5 tutorial
+    
+    In this example, we select a file with a
+    QFileDialog and display its contents
+    in a QTextEdit.
+    
+    author: Jan Bodnar
+    website: zetcode.com
+    last edited: January 2015
+    """
+    
+    import sys
+    from PyQt5.QtWidgets import (QMainWindow, QTextEdit,
+        QAction, QFileDialog, QApplication)
+    from PyQt5.QtGui import QIcon
+    
+    
+    class Example(QMainWindow):
+        
+        def __init__(self):
+            super().__init__()
+            
+            self.initUI()
+            
+            
+        def initUI(self):     
+    
+            self.textEdit = QTextEdit()
+            self.setCentralWidget(self.textEdit)
+            self.statusBar()
+    
+            openFile = QAction(QIcon('open.png'), 'Open', self)
+            openFile.setShortcut('Ctrl+O')
+            openFile.setStatusTip('Open new File')
+            openFile.triggered.connect(self.showDialog)
+    
+            menubar = self.menuBar()
+            fileMenu = menubar.addMenu('&File')
+            fileMenu.addAction(openFile)      
+            
+            self.setGeometry(300, 300, 350, 300)
+            self.setWindowTitle('File dialog')
+            self.show()
+            
+            
+        def showDialog(self):
+    
+            fname = QFileDialog.getOpenFileName(self, 'Open file', '/home')
+    
+            if fname[0]:
+                f = open(fname[0], 'r')
+    
+                with f:
+                    data = f.read()
+                    self.textEdit.setText(data)       
+            
+    if __name__ == '__main__':
+        
+        app = QApplication(sys.argv)
+        ex = Example()
+        sys.exit(app.exec_())
+示例中显示了一个菜单栏，中间设置了一个文本编辑框组件，和一个状态栏。点击菜单项会显示QtGui.QFileDialog（文件选择框）对话框，用于选择一个文件。文件的内容会被读取并在文本编辑框组件中显示。
+
+    class Example(QMainWindow):
+        
+        def __init__(self):
+            super().__init__()
+            
+            self.initUI()
+示例基于QMainWindow组件，因为我们中心需要设置一个文本编辑框组件。
+
+fname = QFileDialog.getOpenFileName(self, 'Open file', '/home')
+弹出文件选择框。第一个字符串参数是getOpenFileName()方法的标题。第二个字符串参数指定了对话框的工作目录。默认的，文件过滤器设置成All files (*)。
+
+
+    if fname[0]:
+        f = open(fname[0], 'r')
+    
+        with f:
+            data = f.read()
+            self.textEdit.setText(data)
+选中文件后，读出文件的内容，并设置成文本编辑框组件的显示文本、
+
+File DialogFigure: File dialog
+
+这部分的PyQt5教程中，我们学习了几种对话框的使用。
+
+## PyQt5中的组件（widgets）
+组件（widgets）是构建一个应用的基础模块。PyQt5有广泛的各式各样的组件，包含按钮，复选按钮，滑块条，和列表框。在这个部分的教程中，我们将学习几种有用的组件：
+
+复选按钮（QCheckBox），切换按钮（ToggleButton），滑块条（QSlider），进度条（ProgressBar）和日历组件（QCalendarWidget）。
+
+ 
+复选框（QCheckBox）
+复选框组件有两种状态：选中和未选中。它是由一个选择框和一个标签组成的。一个应用中，复选框是典型的用来代表有效或无效状态的组件。
+
+    #!/usr/bin/python3
+    # -*- coding: utf-8 -*-
+    
+    """
+    ZetCode PyQt5 tutorial
+    
+    In this example, a QCheckBox widget
+    is used to toggle the title of a window.
+    
+    author: Jan Bodnar
+    website: zetcode.com
+    last edited: January 2015
+    """
+    
+    import sys
+    from PyQt5.QtWidgets import QWidget, QCheckBox, QApplication
+    from PyQt5.QtCore import Qt
+    
+    
+    class Example(QWidget):
+        
+        def __init__(self):
+            super().__init__()
+            
+            self.initUI()
+            
+            
+        def initUI(self):     
+    
+            cb = QCheckBox('Show title', self)
+            cb.move(20, 20)
+            cb.toggle()
+            cb.stateChanged.connect(self.changeTitle)
+            
+            self.setGeometry(300, 300, 250, 150)
+            self.setWindowTitle('QCheckBox')
+            self.show()
+            
+            
+        def changeTitle(self, state):
+        
+            if state == Qt.Checked:
+                self.setWindowTitle('QCheckBox')
+            else:
+                self.setWindowTitle('')
+                
+            
+    if __name__ == '__main__':
+        
+        app = QApplication(sys.argv)
+        ex = Example()
+        sys.exit(app.exec_())
+在我们的例子中，我们创建了一个复选框，用来切换窗口标题。
+
+1
+cb = QCheckBox('Show title', self)
+这是QCheckBox类的构造方法。
+
+1
+cb.toggle()
+我们需要设置窗口标题，所以我们必须选中复选框。如果不选中复选框，默认情况下复选框不会被选中所以窗口标题也不会被设置。
+
+1
+cb.stateChanged.connect(self.changeTitle)
+将我们自定义的changeTitle()槽方法和stateChanged信号连接。changeTitle()方法将用于切换窗口标题。
+
+1
+2
+3
+4
+5
+6
+def changeTitle(self, state):
+     
+    if state == Qt.Checked:
+        self.setWindowTitle('QCheckBox')
+    else:
+        self.setWindowTitle('')
+复选框组件的状态会传入changeTitle()方法的state参数。如果复选框被选中，我们设置窗口标题。否则，我们把窗口标题设置成一个空字符串。
+
+QCheckBoxFigure: QCheckBox
+
+切换按钮
+切换按钮是QPushButton的特殊模式。切换按钮有两种状态：按下和没有按下。我们可以通过点击它在两种状态之间切换。下面的列子展示了切换按钮合适出现的情景。
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+ 
+"""
+ZetCode PyQt5 tutorial
+ 
+In this example, we create three toggle buttons.
+They will control the background colour of a
+QFrame.
+ 
+author: Jan Bodnar
+website: zetcode.com
+last edited: January 2015
+"""
+ 
+import sys
+from PyQt5.QtWidgets import (QWidget, QPushButton,
+    QFrame, QApplication)
+from PyQt5.QtGui import QColor
+ 
+ 
+class Example(QWidget):
+     
+    def __init__(self):
+        super().__init__()
+         
+        self.initUI()
+         
+         
+    def initUI(self):     
+ 
+        self.col = QColor(0, 0, 0)      
+ 
+        redb = QPushButton('Red', self)
+        redb.setCheckable(True)
+        redb.move(10, 10)
+ 
+        redb.clicked[bool].connect(self.setColor)
+ 
+        redb = QPushButton('Green', self)
+        redb.setCheckable(True)
+        redb.move(10, 60)
+ 
+        redb.clicked[bool].connect(self.setColor)
+ 
+        blueb = QPushButton('Blue', self)
+        blueb.setCheckable(True)
+        blueb.move(10, 110)
+ 
+        blueb.clicked[bool].connect(self.setColor)
+ 
+        self.square = QFrame(self)
+        self.square.setGeometry(150, 20, 100, 100)
+        self.square.setStyleSheet("QWidget { background-color: %s }" % 
+            self.col.name())
+         
+        self.setGeometry(300, 300, 280, 170)
+        self.setWindowTitle('Toggle button')
+        self.show()
+         
+         
+    def setColor(self, pressed):
+         
+        source = self.sender()
+         
+        if pressed:
+            val = 255
+        else: val = 0
+                         
+        if source.text() == "Red":
+            self.col.setRed(val)               
+        elif source.text() == "Green":
+            self.col.setGreen(val)            
+        else:
+            self.col.setBlue(val)
+             
+        self.square.setStyleSheet("QFrame { background-color: %s }" %
+            self.col.name()) 
+        
+        
+if __name__ == '__main__':
+     
+    app = QApplication(sys.argv)
+    ex = Example()
+    sys.exit(app.exec_())
+在我们的例子中，我们创建了三个切换按钮和一个QWidget组件。我们把QWidget组件的背景颜色设置为黑色。切换按钮将在红色，绿色和蓝色的RGB值部分进行切换。QWidget组件的背景颜色将取决于哪一个切换按钮被按下。
+
+1
+self.col = QColor(0, 0, 0)
+这里是初始化，让RGB值为黑色。
+
+1
+2
+3
+redb = QPushButton('Red', self)
+redb.setCheckable(True)
+redb.move(10, 10)
+要创建切换按钮，就要创建QPushButton，并且调用setCheckable()方法让它可被选中。
+
+1
+redb.clicked[bool].connect(self.setColor)
+我们把clicked信号连接到我们定义的方法上。我们使用clicked信号来操作布尔值。
+
+1
+source = self.sender()
+我们获得发生状态切换的按钮。
+
+1
+2
+if source.text() == "Red":
+    self.col.setRed(val)
+在这种情况下，如果发生切换的是red按钮，我们更新RGB值中的红色部分的颜色值。
+
+1
+self.square.setStyleSheet("QWidget { background-color: %s }" %  self.col.name())
+我们使用样式表来改变背景颜色。
+
+ 
+
+Toggle button
+
+Figure: Toggle button
+滑块条(QSlider)
+滑块条(QSlider)组件有一个简单的可调节手柄。这个手柄可以前后拖动。我们可以使用这个方式来选择具体的数值。有时使用滑块条比直接输入数字或使用数值选择框更自然，在我们下面的例子中，我们将显示一个滑块条和一个标签。标签将会显示一个图像。滑块条将控制标签。
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+ 
+"""
+ZetCode PyQt5 tutorial
+ 
+This example shows a QSlider widget.
+ 
+author: Jan Bodnar
+website: zetcode.com
+last edited: January 2015
+"""
+ 
+import sys
+from PyQt5.QtWidgets import (QWidget, QSlider,
+    QLabel, QApplication)
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPixmap
+ 
+ 
+class Example(QWidget):
+     
+    def __init__(self):
+        super().__init__()
+         
+        self.initUI()
+         
+         
+    def initUI(self):     
+ 
+        sld = QSlider(Qt.Horizontal, self)
+        sld.setFocusPolicy(Qt.NoFocus)
+        sld.setGeometry(30, 40, 100, 30)
+        sld.valueChanged[int].connect(self.changeValue)
+         
+        self.label = QLabel(self)
+        self.label.setPixmap(QPixmap('mute.png'))
+        self.label.setGeometry(160, 40, 80, 30)
+         
+        self.setGeometry(300, 300, 280, 170)
+        self.setWindowTitle('QSlider')
+        self.show()
+         
+         
+    def changeValue(self, value):
+ 
+        if value == 0:
+            self.label.setPixmap(QPixmap('mute.png'))
+        elif value > 0 and value <= 30:
+            self.label.setPixmap(QPixmap('min.png'))
+        elif value > 30 and value < 80:
+            self.label.setPixmap(QPixmap('med.png'))
+        else:
+            self.label.setPixmap(QPixmap('max.png'))
+             
+ 
+if __name__ == '__main__':
+ 
+    app = QApplication(sys.argv)
+    ex = Example()
+    sys.exit(app.exec_())
+在我们的例子中，我们模拟了一个音量控制器。通过拖动滑块条的把手，我们可以改变标签的图像。
+
+1
+sld = QSlider(Qt.Horizontal, self)
+这里我们创建了一个横向的滑块条。
+
+1
+2
+self.label = QLabel(self)
+self.label.setPixmap(QPixmap('mute.png'))
+我们创建了一个标签组件，并且设置一个初始的无声图片。
+
+1
+sld.valueChanged[int].connect(self.changeValue)
+我们把valueChanged 信号连接到我们自定义的 changeValue()方法上。
+
+1
+2
+3
+if value == 0:
+    self.label.setPixmap(QPixmap('mute.png'))
+...
+这里实现了根据滑块条的值，我们设置不同的标签图片。在上面的代码中，如果滑块条的值等于零，我们为标签设置mute.png图片。
+
+QSlider widget
+
+Figure: QSlider widget
+进度条（QProgressBar）
+当我们处理耗时长的任务时，我们需要用到进度条组件。它通过动画的方式让我们了解任务正在处理中。在PyQt5中，进度条组件提供了横向和纵向的进度条选择。程序员可以设置进度条的最大值和最小值。进度条的默认值是0~99。
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+ 
+"""
+ZetCode PyQt5 tutorial
+ 
+This example shows a QProgressBar widget.
+ 
+author: Jan Bodnar
+website: zetcode.com
+last edited: January 2015
+"""
+ 
+import sys
+from PyQt5.QtWidgets import (QWidget, QProgressBar,
+    QPushButton, QApplication)
+from PyQt5.QtCore import QBasicTimer
+ 
+ 
+class Example(QWidget):
+     
+    def __init__(self):
+        super().__init__()
+         
+        self.initUI()
+         
+         
+    def initUI(self):     
+ 
+        self.pbar = QProgressBar(self)
+        self.pbar.setGeometry(30, 40, 200, 25)
+ 
+        self.btn = QPushButton('Start', self)
+        self.btn.move(40, 80)
+        self.btn.clicked.connect(self.doAction)
+ 
+        self.timer = QBasicTimer()
+        self.step = 0
+         
+        self.setGeometry(300, 300, 280, 170)
+        self.setWindowTitle('QProgressBar')
+        self.show()
+         
+         
+    def timerEvent(self, e):
+       
+        if self.step >= 100:
+            self.timer.stop()
+            self.btn.setText('Finished')
+            return
+             
+        self.step = self.step + 1
+        self.pbar.setValue(self.step)
+         
+ 
+    def doAction(self):
+       
+        if self.timer.isActive():
+            self.timer.stop()
+            self.btn.setText('Start')
+        else:
+            self.timer.start(100, self)
+            self.btn.setText('Stop')
+             
+         
+if __name__ == '__main__':
+     
+    app = QApplication(sys.argv)
+    ex = Example()
+    sys.exit(app.exec_())
+在我们的例子中有一个横向进度条和一个按钮。按钮控制滑块条的开始和停止。
+
+1
+self.pbar = QProgressBar(self)
+这是滑块条类的构造方法。
+
+1
+self.timer = QtCore.QBasicTimer()
+我们用定时器对象来激活进度条。
+
+1
+self.timer.start(100, self)
+为了开启定时器事件，我们调用了start()方法。这个方法有两个参数：定时时间和接收定时器事件的对象。
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+def timerEvent(self, e):
+   
+    if self.step >= 100:
+     
+        self.timer.stop()
+        self.btn.setText('Finished')
+        return
+         
+    self.step = self.step + 1
+    self.pbar.setValue(self.step)
+每个QObject类和它的子类都有timerEvent()事件处理函数用于处理定时事件。为了对定时器事件作出反馈，我们重新实现了这个事件处理函数。
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+def doAction(self):
+   
+    if self.timer.isActive():
+        self.timer.stop()
+        self.btn.setText('Start')
+         
+    else:
+        self.timer.start(100, self)
+        self.btn.setText('Stop')
+在doAction()方法中，我们开始和停止定时器。
+
+QProgressBar
+
+Figure: QProgressBar
+日历组件（QCalendarWidget）
+QCalendarWidget类提供了一个基于月的日历组件。它允许用户通过简单的直观的方式选择日期。
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+ 
+"""
+ZetCode PyQt5 tutorial
+ 
+This example shows a QCalendarWidget widget.
+ 
+author: Jan Bodnar
+website: zetcode.com
+last edited: January 2015
+"""
+ 
+import sys
+from PyQt5.QtWidgets import (QWidget, QCalendarWidget,
+    QLabel, QApplication)
+from PyQt5.QtCore import QDate
+ 
+ 
+class Example(QWidget):
+     
+    def __init__(self):
+        super().__init__()
+         
+        self.initUI()
+         
+         
+    def initUI(self):     
+ 
+        cal = QCalendarWidget(self)
+        cal.setGridVisible(True)
+        cal.move(20, 20)
+        cal.clicked[QDate].connect(self.showDate)
+         
+        self.lbl = QLabel(self)
+        date = cal.selectedDate()
+        self.lbl.setText(date.toString())
+        self.lbl.move(130, 260)
+         
+        self.setGeometry(300, 300, 350, 300)
+        self.setWindowTitle('Calendar')
+        self.show()
+         
+         
+    def showDate(self, date):    
+         
+        self.lbl.setText(date.toString())
+         
+         
+if __name__ == '__main__':
+     
+    app = QApplication(sys.argv)
+    ex = Example()
+    sys.exit(app.exec_())
+以上的例子展示一个日历组件和标签组件。功能是日历中选择的日期会显示在标签组件中。
+
+1
+cal = QCalendarWidget(self)
+创建QCalendarWidget类。
+
+1
+cal.clicked[QDate].connect(self.showDate)
+如果我们在组件上选择了一个日期，clicked[QDate] 信号会被发射。我们把这个信号和自定义的showDate()方法连接。
+
+1
+2
+3
+def showDate(self, date):    
+     
+    self.lbl.setText(date.toString())
+我们通过selectedDate()方法检索被选中的日期。然后我们把选中的日期对象转化成字符串显示在标签组件上。
