@@ -576,7 +576,7 @@ QAction是一个用于菜单栏、工具栏或自定义快捷键的抽象动作�
     fileMenu.addAction(exitAction)
 menuBar()方法创建了一个菜单栏。我们创建一个file菜单，然后将退出动作添加到file菜单中。
 
-工具栏
+## 工具栏
 菜单可以集成所有命令，这样我们可以在应用中使用这些被集成的命令。工具栏提供了一个快速访问常用命令的方式。
 **009.py**
     #!/usr/bin/python3
@@ -732,8 +732,9 @@ PyQt5中的布局管理
 -   下面的例子中，使用了绝对坐标来定位组件
 
 **011.py**
-#!/usr/bin/python3
-# -*- coding: utf-8 -*-
+
+    #!/usr/bin/python3
+    # -*- coding: utf-8 -*-
  
     """
     ZetCode PyQt5 tutorial
@@ -795,60 +796,60 @@ Absolute positioningFigure: Absolute positioning
 箱布局
 布局管理器的布局管理类非常灵活，实用。它是将组件定位在窗口上的首选方式。QHBoxLayout和QVBoxLayout是两个基础布局管理类，他们水平或垂直的线性排列组件。想象一下我们需要在右下角排列两个按钮。为了使用箱布局，我们将使用一个水平箱布局和垂直箱布局来实现。同样为了使用一些必要的空白，我们将添加一些拉伸因子。
 **012.py**
-#!/usr/bin/python3
-# -*- coding: utf-8 -*-
- 
-"""
-ZetCode PyQt5 tutorial
- 
-In this example, we position two push
-buttons in the bottom-right corner
-of the window.
- 
-author: Jan Bodnar
-website: zetcode.com
-last edited: January 2015
-"""
- 
-import sys
-from PyQt5.QtWidgets import (QWidget, QPushButton,
-    QHBoxLayout, QVBoxLayout, QApplication)
- 
- 
-class Example(QWidget):
-     
-    def __init__(self):
-        super().__init__()
-         
-        self.initUI()
-         
-         
-    def initUI(self):
-         
-        okButton = QPushButton("OK")
-        cancelButton = QPushButton("Cancel")
- 
-        hbox = QHBoxLayout()
-        hbox.addStretch(1)
-        hbox.addWidget(okButton)
-        hbox.addWidget(cancelButton)
- 
-        vbox = QVBoxLayout()
-        vbox.addStretch(1)
-        vbox.addLayout(hbox)
-         
-        self.setLayout(vbox)   
-         
-        self.setGeometry(300, 300, 300, 150)
-        self.setWindowTitle('Buttons')   
-        self.show()
-         
-         
-if __name__ == '__main__':
-     
-    app = QApplication(sys.argv)
-    ex = Example()
-    sys.exit(app.exec_())
+    #!/usr/bin/python3
+    # -*- coding: utf-8 -*-
+    
+    """
+    ZetCode PyQt5 tutorial
+    
+    In this example, we position two push
+    buttons in the bottom-right corner
+    of the window.
+    
+    author: Jan Bodnar
+    website: zetcode.com
+    last edited: January 2015
+    """
+    
+    import sys
+    from PyQt5.QtWidgets import (QWidget, QPushButton,
+        QHBoxLayout, QVBoxLayout, QApplication)
+    
+    
+    class Example(QWidget):
+        
+        def __init__(self):
+            super().__init__()
+            
+            self.initUI()
+            
+            
+        def initUI(self):
+            
+            okButton = QPushButton("OK")
+            cancelButton = QPushButton("Cancel")
+    
+            hbox = QHBoxLayout()
+            hbox.addStretch(1)
+            hbox.addWidget(okButton)
+            hbox.addWidget(cancelButton)
+    
+            vbox = QVBoxLayout()
+            vbox.addStretch(1)
+            vbox.addLayout(hbox)
+            
+            self.setLayout(vbox)   
+            
+            self.setGeometry(300, 300, 300, 150)
+            self.setWindowTitle('Buttons')   
+            self.show()
+            
+            
+    if __name__ == '__main__':
+        
+        app = QApplication(sys.argv)
+        ex = Example()
+        sys.exit(app.exec_())
 　　
 
 例子在右下角放置了两个按钮。当我们改变应用窗口大小时，它们会相对于应用窗口不改变位置。在这个例子中我们使用了QHBoxLayout和QVBoxLayout两个布局类。
@@ -944,8 +945,9 @@ if __name__ == '__main__':
 
 在我们的例子中，我们创建了一个全是按钮的网格布局。
 
-grid = QGridLayout()
-self.setLayout(grid)
+    grid = QGridLayout()
+    self.setLayout(grid)
+
 实例化QGridLayout类，并且把这个类设为应用窗口的布局。
 
 
@@ -1040,12 +1042,10 @@ Calculator skeletonFigure: Calculator skeleton
     grid = QGridLayout()
     grid.setSpacing(10)
 我们创建了一个网格布局并且设置了组件之间的间距。
-
-
     grid.addWidget(reviewEdit, 3, 1, 5, 1)
 如果我们向网格布局中增加一个组件，我们可以提供组件的跨行和跨列参数。在这个例子中，我们让reviewEdit组件跨了5行。
     void QGridLayout::addWidget(QWidget * widget, int fromRow, int fromColumn, int rowSpan, int columnSpan, Qt::Alignment alignment = 0)
-This is an overloaded function.
+    This is an overloaded function.
 
 Review exampleFigure: Review example
 
