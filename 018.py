@@ -1,17 +1,3 @@
-#!/usr/bin/python3
-# -*- coding: utf-8 -*-
-
-"""
-ZetCode PyQt5 tutorial
- 
-In this example, we show how to emit a
-signal.
- 
-author: Jan Bodnar
-website: zetcode.com
-last edited: January 2015
-"""
-
 import sys
 from PyQt5.QtCore import pyqtSignal, QObject
 from PyQt5.QtWidgets import QMainWindow, QApplication
